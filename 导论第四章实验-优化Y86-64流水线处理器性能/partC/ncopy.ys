@@ -1,0 +1,206 @@
+#name : 洪子翔
+#ID ：1820211062
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+	# Loop header
+
+	iaddq $-10,%rdx		#判断是否有10个数(含)以上
+	jl remain
+
+Loop:	
+	mrmovq (%rdi), %r8	
+	mrmovq 8(%rdi),%r9	
+	
+	rmmovq %r8, (%rsi)	
+	rmmovq %r9,8(%rsi)
+	
+	andq %r8, %r8		
+	jle two			
+	iaddq $1,%rax
+two:						
+	andq %r9,%r9
+	jle three
+	iaddq $1, %rax		
+three:
+	mrmovq 16(%rdi),%r8
+	mrmovq 24(%rdi),%r9
+
+	rmmovq %r8,16(%rsi)
+	rmmovq %r9,24(%rsi)
+
+	andq %r8,%r8
+	jle four
+	iaddq $1,%rax
+four:
+	andq %r9,%r9
+	jle five
+	iaddq $1,%rax
+five:
+	mrmovq 32(%rdi),%r8
+	mrmovq 40(%rdi),%r9
+
+	rmmovq %r8,32(%rsi)
+	rmmovq %r9,40(%rsi)
+
+	andq %r8,%r8
+	jle six
+	iaddq $1,%rax
+six:
+	andq %r9,%r9
+	jle seven
+	iaddq $1,%rax
+seven:
+	mrmovq 48(%rdi),%r8
+	mrmovq 56(%rdi),%r9
+
+	rmmovq %r8,48(%rsi)
+	rmmovq %r9,56(%rsi)
+
+	andq %r8,%r8
+	jle eight
+	iaddq $1,%rax
+eight:
+	andq %r9,%r9
+	jle nine
+	iaddq $1,%rax
+nine:
+	mrmovq 64(%rdi),%r8
+	mrmovq 72(%rdi),%r9
+
+	rmmovq %r8,64(%rsi)
+	rmmovq %r9,72(%rsi)
+
+	andq %r8,%r8
+	jle ten
+	iaddq $1,%rax
+ten:
+	andq %r9,%r9
+	jle Npos
+	iaddq $1,%rax
+Npos:
+	
+	iaddq $80, %rdi			#src+10
+	iaddq $80, %rsi			#dst+10
+
+	iaddq $-10, %rdx			#下一轮循环
+
+	jge Loop
+
+remain:						#剩余的
+	iaddq $7,%rdx			
+	jl left					#len<3
+	jg right				#len>3
+	je remain3				#len==3
+
+left:
+	iaddq $2,%rdx			#len==1
+	je remain1
+	iaddq $-1,%rdx			#len==2
+	je remain2
+	ret 					#len==0
+
+right:
+	iaddq $-3,%rdx			#len<=6
+	jg rightRight
+	je remain6 				#len==6
+	
+	iaddq $1,%rdx
+	je remain5 				#len==5
+	jmp remain4 			#len==4
+rightRight:
+	iaddq $-2,%rdx
+	jl remain7
+	je remain8
+
+remain9:
+	mrmovq 64(%rdi),%r8
+	andq %r8,%r8
+	rmmovq %r8,64(%rsi)	
+
+remain8:
+	mrmovq 56(%rdi),%r8
+	jle remain82
+	iaddq $1,%rax
+
+remain82:
+	rmmovq %r8,56(%rsi)
+	andq %r8,%r8
+remain7:
+	mrmovq 48(%rdi),%r8
+	jle remain72
+	iaddq $1,%rax
+remain72:
+	rmmovq %r8,48(%rsi)
+	andq %r8,%r8
+remain6:
+	mrmovq 40(%rdi),%r8
+	jle remain62
+	iaddq $1,%rax
+remain62:
+	rmmovq %r8,40(%rsi)
+	andq %r8,%r8
+remain5:
+	mrmovq 32(%rdi),%r8
+	jle remain52
+	iaddq $1,%rax
+remain52:
+	rmmovq %r8,32(%rsi)
+	andq %r8,%r8
+remain4:
+	mrmovq 24(%rdi),%r8
+	jle remain42
+	iaddq $1,%rax
+remain42:
+	rmmovq %r8,24(%rsi)
+	andq %r8,%r8
+remain3:
+	mrmovq 16(%rdi),%r8
+	jle remain32
+	iaddq $1,%rax
+remain32:
+	rmmovq %r8,16(%rsi)
+	andq %r8,%r8
+remain2:
+	mrmovq 8(%rdi),%r8
+	jle remain22
+	iaddq $1,%rax
+remain22:
+	rmmovq %r8,8(%rsi)
+	andq %r8,%r8
+remain1:
+	mrmovq (%rdi),%r8
+	jle remain12
+	iaddq $1,%rax
+remain12:
+	rmmovq %r8,(%rsi)
+	andq %r8,%r8
+	jle Done
+	iaddq $1,%rax
+		
+
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */
+

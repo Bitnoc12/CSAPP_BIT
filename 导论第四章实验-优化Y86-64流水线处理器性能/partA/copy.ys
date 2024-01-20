@@ -1,0 +1,61 @@
+#name : 洪子翔
+#ID ：1820211062
+	.pos 0
+	irmovq stack,%rsp
+	call main
+	halt
+
+	.align 8
+src:
+	.quad 0x00a
+	.quad 0x0b0
+	.quad 0xc00
+
+dest:
+	.quad 0x111
+	.quad 0x222
+	.quad 0x333
+
+main:
+	irmovq src,%rdi
+	irmovq dest,%rsi
+	irmovq $3,%rdx		
+
+	call copy_block		
+
+	ret
+
+copy_block:
+
+	pushq %rbx			
+
+	xorq %rax,%rax
+	irmovq $8,%r8		
+	irmovq $1,%r9		
+
+	andq %rdx,%rdx	
+	jle exit			
+
+loop:
+
+	mrmovq (%rdi),%rbx	
+	addq %r8,%rdi		
+
+	rmmovq %rbx,(%rsi)	
+	addq %r8,%rsi		
+
+	xorq %rbx,%rax		
+
+	subq %r9,%rdx		
+
+	andq %rdx,%rdx		
+	jg loop
+
+exit:
+	popq %rbx		
+	ret
+
+
+	.pos 0x200
+stack:
+
